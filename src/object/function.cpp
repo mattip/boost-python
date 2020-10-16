@@ -435,12 +435,13 @@ void function::add_to_namespace(
         if (PyClass_Check(ns))
             dict = handle<>(borrowed(((PyClassObject*)ns)->cl_dict));
         else
-#endif        
+#elif !defined(PYPY_VERSION)
         if (PyType_Check(ns))
             dict = handle<>(borrowed(((PyTypeObject*)ns)->tp_dict));
-        else    
+        else
+#else
             dict = handle<>(PyObject_GetAttrString(ns, const_cast<char*>("__dict__")));
-
+#endif
         if (dict == 0)
             throw_error_already_set();
 
